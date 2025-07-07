@@ -1,11 +1,12 @@
 ﻿using bellosoft.Domain.Entities.Dtos;
+using bellosoft.Domain.Interfaces;
 using bellosoft.Domain.Settings;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
 
 namespace bellosoft.Service
 {
-    public class TMDBService(HttpClient httpClient, IOptions<TMDBSettings> settings)
+    public class TMDBService(HttpClient httpClient, IOptions<TMDBSettings> settings) : ITMDBService
     {
         private readonly HttpClient _httpClient = httpClient;
         private readonly string _apiKey = settings.Value.ApiKey;
