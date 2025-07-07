@@ -1,4 +1,5 @@
 using bellosoft.Domain.Entities.Dtos;
+using bellosoft.Domain.Entities.Errors;
 using bellosoft.Domain.Settings;
 using bellosoft.Service;
 using Microsoft.Extensions.Options;
@@ -41,7 +42,6 @@ public class TMDBServiceTests
     [TestMethod]
     public async Task GetMovieDetailsAsync_Success_ReturnsDetails()
     {
-        // Arrange
         var expected = new MovieDetailsDto
         {
             Id = 123,
@@ -65,20 +65,17 @@ public class TMDBServiceTests
             )
             .ReturnsAsync(response);
 
-        // Act
         var result = await _service.GetMovieDetailsAsync(123);
 
-        // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(expected.Id, result.Id);
         Assert.AreEqual(expected.Title, result.Title);
     }
 
     [TestMethod]
-    public async Task GetMovieDetailsAsync_Error_ReturnsNull()
+    public async Task GetMovieDetailsAsync_Error_ThrowsException()
     {
-        // Arrange
-        var response = new HttpResponseMessage(HttpStatusCode.NotFound);
+        var response = new HttpResponseMessage(HttpStatusCode.BadRequest);
 
         _mockHttpMessageHandler
             .Protected()
@@ -89,17 +86,15 @@ public class TMDBServiceTests
             )
             .ReturnsAsync(response);
 
-        // Act
-        var result = await _service.GetMovieDetailsAsync(999);
-
-        // Assert
-        Assert.IsNull(result);
+        await Assert.ThrowsExceptionAsync<Exception>(async () =>
+        {
+            await _service.GetMovieDetailsAsync(999);
+        });
     }
 
     [TestMethod]
     public async Task GetPopularMoviesAsync_Success_ReturnsResult()
     {
-        // Arrange
         var expected = new MovieResultDto
         {
             Page = 1,
@@ -124,20 +119,17 @@ public class TMDBServiceTests
             )
             .ReturnsAsync(response);
 
-        // Act
         var result = await _service.GetPopularMoviesAsync();
 
-        // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(expected.Page, result.Page);
         Assert.AreEqual(1, result.Results.Count);
     }
 
     [TestMethod]
-    public async Task GetPopularMoviesAsync_Error_ReturnsNull()
+    public async Task GetPopularMoviesAsync_NotFound_ThrowsNotFoundException()
     {
-        // Arrange
-        var response = new HttpResponseMessage(HttpStatusCode.BadRequest);
+        var response = new HttpResponseMessage(HttpStatusCode.NotFound);
 
         _mockHttpMessageHandler
             .Protected()
@@ -148,17 +140,35 @@ public class TMDBServiceTests
             )
             .ReturnsAsync(response);
 
-        // Act
-        var result = await _service.GetPopularMoviesAsync();
+        await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
+        {
+            await _service.GetPopularMoviesAsync();
+        });
+    }
 
-        // Assert
-        Assert.IsNull(result);
+    [TestMethod]
+    public async Task GetPopularMoviesAsync_OtherError_ThrowsException()
+    {
+        var response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+
+        _mockHttpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>()
+            )
+            .ReturnsAsync(response);
+
+        await Assert.ThrowsExceptionAsync<Exception>(async () =>
+        {
+            await _service.GetPopularMoviesAsync();
+        });
     }
 
     [TestMethod]
     public async Task SearchMoviesAsync_Success_ReturnsResult()
     {
-        // Arrange
         var expected = new MovieResultDto
         {
             Page = 1,
@@ -183,10 +193,8 @@ public class TMDBServiceTests
             )
             .ReturnsAsync(response);
 
-        // Act
         var result = await _service.SearchMoviesAsync("Searched");
 
-        // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(expected.Page, result.Page);
         Assert.AreEqual(1, result.Results.Count);
@@ -194,10 +202,9 @@ public class TMDBServiceTests
     }
 
     [TestMethod]
-    public async Task SearchMoviesAsync_Error_ReturnsNull()
+    public async Task SearchMoviesAsync_Error_ThrowsBadRequestException()
     {
-        // Arrange
-        var response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+        var response = new HttpResponseMessage(HttpStatusCode.BadRequest);
 
         _mockHttpMessageHandler
             .Protected()
@@ -208,10 +215,9 @@ public class TMDBServiceTests
             )
             .ReturnsAsync(response);
 
-        // Act
-        var result = await _service.SearchMoviesAsync("fail");
-
-        // Assert
-        Assert.IsNull(result);
+        await Assert.ThrowsExceptionAsync<BadRequestException>(async () =>
+        {
+            await _service.SearchMoviesAsync("fail");
+        });
     }
 }
