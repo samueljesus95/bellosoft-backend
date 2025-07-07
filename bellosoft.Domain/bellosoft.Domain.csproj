@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\Dtos\" />
     <Folder Include="Entities\External\" />
   </ItemGroup>
 
