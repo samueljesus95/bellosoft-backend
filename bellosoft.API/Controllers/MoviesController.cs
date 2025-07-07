@@ -3,6 +3,7 @@ using bellosoft.Domain.Entities.Dtos;
 using bellosoft.Domain.Entities.Errors;
 using bellosoft.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace bellosoft.API.Controllers
 {
@@ -14,6 +15,10 @@ namespace bellosoft.API.Controllers
 
         [HttpGet("popular")]
         [ProducesResponseType(typeof(ApiResponse<MovieResultDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(Summary = "Search popular movies")]
         public async Task<IActionResult> GetPopularMovies([FromQuery] int page = 1)
         {
             var result = await _tmdbService.GetPopularMoviesAsync(page);
@@ -22,6 +27,10 @@ namespace bellosoft.API.Controllers
 
         [HttpGet("search")]
         [ProducesResponseType(typeof(ApiResponse<MovieResultDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(Summary = "Search movie by name")]
         public async Task<IActionResult> SearchMovies([FromQuery] string query, [FromQuery] int page = 1)
         {
             if (string.IsNullOrWhiteSpace(query)) throw new BadRequestException("The 'query' parameter is required");
@@ -32,6 +41,10 @@ namespace bellosoft.API.Controllers
 
         [HttpGet("{id:int}")]
         [ProducesResponseType(typeof(ApiResponse<MovieDetailsDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(Summary = "Get movie detail by id")]
         public async Task<IActionResult> GetMovieDetails(int id)
         {
             var movie = await _tmdbService.GetMovieDetailsAsync(id);
