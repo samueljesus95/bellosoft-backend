@@ -1,7 +1,9 @@
 ﻿using bellosoft.Domain.Entities.Dtos;
+using bellosoft.Domain.Entities.Errors;
 using bellosoft.Domain.Interfaces;
 using bellosoft.Domain.Settings;
 using Microsoft.Extensions.Options;
+using System.Net;
 using System.Net.Http.Json;
 
 namespace bellosoft.Service
@@ -16,7 +18,7 @@ namespace bellosoft.Service
             var url = $"movie/{movieId}?api_key={_apiKey}&language={language}";
 
             var response = await _httpClient.GetAsync(url);
-            if (!response.IsSuccessStatusCode) return null;
+            if (!response.IsSuccessStatusCode) throw new Exception("Error accessing TMDB service");
 
             return await response.Content.ReadFromJsonAsync<MovieDetailsDto>();
         }
@@ -26,7 +28,8 @@ namespace bellosoft.Service
             var url = $"movie/popular?api_key={_apiKey}&language={language}&page={page}";
 
             var response = await _httpClient.GetAsync(url);
-            if (!response.IsSuccessStatusCode) return null;
+            if (response.StatusCode == HttpStatusCode.NotFound) throw new NotFoundException("Movie not found");
+            if (!response.IsSuccessStatusCode) throw new Exception("Error accessing movie details");
 
             var result = await response.Content.ReadFromJsonAsync<MovieResultDto>();
             return result;
@@ -38,7 +41,7 @@ namespace bellosoft.Service
             var url = $"search/movie?api_key={_apiKey}&language={language}&query={encodedQuery}&page={page}";
 
             var response = await _httpClient.GetAsync(url);
-            if (!response.IsSuccessStatusCode) return null;
+            if (!response.IsSuccessStatusCode) throw new BadRequestException("Error searching for movies");
 
             return await response.Content.ReadFromJsonAsync<MovieResultDto>();
         }

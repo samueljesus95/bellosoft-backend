@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\bellosoft.Domain\bellosoft.Domain.csproj" />
     <ProjectReference Include="..\bellosoft.Service\bellosoft.Service.csproj" />
   </ItemGroup>
