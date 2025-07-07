@@ -2,12 +2,14 @@
 using bellosoft.Domain.Entities.Dtos;
 using bellosoft.Domain.Entities.Errors;
 using bellosoft.Domain.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace bellosoft.API.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class MoviesController(ITMDBService tmdbService) : ControllerBase
     {

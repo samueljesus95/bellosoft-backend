@@ -10,4 +10,8 @@
     <Folder Include="Entities\External\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.4" />
+  </ItemGroup>
+
 </Project>

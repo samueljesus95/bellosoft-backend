@@ -51,6 +51,7 @@ namespace bellosoft.API.Configuration
             var apiVersionDescriptorProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
             app.UseSwagger();
+            app.MapSwagger();
             app.UseSwaggerUI(options =>
             {
                 foreach (var groupName in apiVersionDescriptorProvider.ApiVersionDescriptions.Select(description => description.GroupName))
